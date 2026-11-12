@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Marks Calculator</title>
+<style>
+  /* Simple Design */
+  body{ font-family: Arial; background: #eef2ff; padding: 20px; }
+  .box{ background: white; max-width: 450px; margin: auto; padding: 20px; border-radius: 12px; }
+  h2{ text-align: center; color: #4f46e5; }
+  input{ width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ccc; border-radius: 8px; }
+  button{ width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+  #result{ background: #f1f5f9; padding: 12px; margin-top: 12px; border-radius: 8px; text-align: center; }
+  .student{ background: #f8fafc; padding: 10px; margin-top: 8px; border-radius: 8px; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h2>🎓 Marks Calculator</h2>
+
+  <!-- 1. Student Details -->
+  <input id="name" placeholder="Student Name">
+  <input id="roll" placeholder="Roll Number">
+
+  <!-- 2. 5 Subjects Marks -->
+  <input type="number" id="m1" placeholder="Subject 1 Marks (out of 100)">
+  <input type="number" id="m2" placeholder="Subject 2 Marks">
+  <input type="number" id="m3" placeholder="Subject 3 Marks">
+  <input type="number" id="m4" placeholder="Subject 4 Marks">
+  <input type="number" id="m5" placeholder="Subject 5 Marks">
+
+  <button onclick="calculate()">Calculate Result</button>
+
+  <!-- 3. Result Yaha Show Hoga -->
+  <div id="result">See Result</div>
+
+  <h3 style="margin-top:20px">Saved Students</h3>
+  <div id="list"></div>
+</div>
+
+<script>
+  // Pehle se saved data lao, nahi to khali list
+  let students = JSON.parse(localStorage.getItem("students")) || [];
+
+  function calculate(){
+    // Step 1: Values lena
+    let name = document.getElementById("name").value;
+    let roll = document.getElementById("roll").value;
+
+    // Step 2: 5 subjects ke marks jodna
+    let total = Number(m1.value) + Number(m2.value) + Number(m3.value) + Number(m4.value) + Number(m5.value);
+
+    // Step 3: Percentage nikalna
+    let per = total / 5;
+
+    // Step 4: Grade nikalna
+    let grade = "";
+    if(per >= 90) grade = "A+";
+    else if(per >= 80) grade = "A";
+    else if(per >= 70) grade = "B";
+    else if(per >= 60) grade = "C";
+    else if(per >= 40) grade = "D";
+    else grade = "F";
+
+    // Step 5: Pass / Fail
+    let status = per >= 40 ? "Pass ✅" : "Fail ❌";
+
+    // Step 6: Result dikhana
+    document.getElementById("result").innerHTML =
+      "Total: " + total + "/500 <br>" +
+      "Percentage: " + per + "% <br>" +
+      "Grade: " + grade + " <br>" +
+      "Status: " + status;
+
+    // Step 7: localStorage me save karna
+    students.push({name: name, roll: roll, total: total, per: per, grade: grade});
+    localStorage.setItem("students", JSON.stringify(students));
+    showList();
+  }
+
+  function showList(){
+    let html = "";
+    students.forEach(function(s, i){
+      html += `<div class="student">
+        <span><b>${s.name}</b> (${s.roll}) - ${s.per}% - ${s.grade}</span>
+        <button onclick="del(${i})" style="width:auto; padding:5px 10px; background:red;">Delete</button>
+      </div>`;
+    });
+    document.getElementById("list").innerHTML = html;
+  }
+
+  function del(i){
+    students.splice(i, 1); // ek student delete
+    localStorage.setItem("students", JSON.stringify(students));
+    showList();
+  }
+
+  showList();
+</script>
+</body>
+</html>
